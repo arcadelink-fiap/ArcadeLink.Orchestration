@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong
+  template:
+    metadata:
+      labels:
+        app: kong
+    spec:
+      containers:
+        - name: kong
+          image: kong:3.6
+          env:
+            - name: KONG_DATABASE
+              value: "off"
+            - name: KONG_DECLARATIVE_CONFIG
+              value: /kong/declarative/kong.yml
+            - name: KONG_PROXY_LISTEN
+              value: "0.0.0.0:8000"
+            - name: KONG_ADMIN_LISTEN
+              value: "127.0.0.1:8001"
+            - name: KONG_UNTRUSTED_LUA_SANDBOX_REQUIRES
+              value: "kong.plugins.jwt.jwt_parser"
+          ports:
+            - containerPort: 8000
+            - containerPort: 8001
+          volumeMounts:
+            - name: kong-config
+              mountPath: /kong/declarative
+      volumes:
+        - name: kong-config
+          configMap:
+            name: kong-declarative-config

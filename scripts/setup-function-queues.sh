@@ -12,6 +12,11 @@ declare_queue_and_binding() {
   local exchange="$2"
 
   curl -sf -u "${RABBITMQ_USER}:${RABBITMQ_PASSWORD}" \
+    -X PUT "${BASE_URL}/exchanges/%2f/${exchange}" \
+    -H "content-type: application/json" \
+    -d '{"type": "fanout", "durable": true}'
+
+  curl -sf -u "${RABBITMQ_USER}:${RABBITMQ_PASSWORD}" \
     -X PUT "${BASE_URL}/queues/%2f/${queue}" \
     -H "content-type: application/json" \
     -d '{"durable": true}'
