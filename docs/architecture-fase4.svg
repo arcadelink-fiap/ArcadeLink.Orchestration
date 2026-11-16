@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 840" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#555555"/></marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2563eb"/></marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#13aa52"/></marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#d6336c"/></marker>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/></marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ea580c"/></marker>
+  </defs>
+  <rect width="1400" height="840" fill="#ffffff"/>
+  <text x="700" y="32" text-anchor="middle" font-size="24" font-weight="700" fill="#1a1a1a">ArcadeLink — Arquitetura da Fase 4 (AWS EKS)</text>
+  <text x="700" y="54" text-anchor="middle" font-size="12.5" fill="#666666">CI/CD por OIDC, segredos injetados em runtime, cache, NoSQL e busca gerenciada — região us-east-2</text>
+
+  <!-- GitHub -->
+  <rect x="30" y="100" width="240" height="100" rx="12" fill="#f3f4f6" stroke="#374151" stroke-width="1.6"/>
+  <text x="150" y="128" text-anchor="middle" font-size="14" font-weight="700" fill="#111827">GitHub Actions</text>
+  <text x="150" y="148" text-anchor="middle" font-size="11" fill="#374151">test → build → Trivy → push</text>
+  <text x="150" y="164" text-anchor="middle" font-size="11" fill="#374151">→ rolling deploy (+ undo)</text>
+  <text x="150" y="184" text-anchor="middle" font-size="10.5" fill="#2563eb">autentica na AWS via OIDC</text>
+
+  <rect x="30" y="250" width="240" height="90" rx="12" fill="#fefce8" stroke="#ca8a04" stroke-width="1.6"/>
+  <text x="150" y="278" text-anchor="middle" font-size="14" font-weight="700" fill="#854d0e">GitHub Secrets / Variables</text>
+  <text x="150" y="298" text-anchor="middle" font-size="11" fill="#854d0e">só no repo Orchestration</text>
+  <text x="150" y="314" text-anchor="middle" font-size="11" fill="#854d0e">JWT_KEY, senhas, admin seed…</text>
+
+  <!-- Cliente -->
+  <rect x="30" y="440" width="150" height="60" rx="12" fill="#eef6ff" stroke="#4a90d9" stroke-width="1.6"/>
+  <text x="105" y="468" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">Internet</text>
+  <text x="105" y="486" text-anchor="middle" font-size="11" fill="#1e3a8a">clientes / curl / Swagger</text>
+
+  <!-- AWS -->
+  <rect x="300" y="75" width="1085" height="745" rx="16" fill="none" stroke="#f59e0b" stroke-width="2" stroke-dasharray="8 5"/>
+  <text x="316" y="96" font-size="13" font-weight="700" fill="#b45309">AWS · us-east-2 · VPC só com subnets públicas (sem NAT)</text>
+
+  <rect x="330" y="110" width="230" height="64" rx="12" fill="#fff7ed" stroke="#ea580c" stroke-width="1.6"/>
+  <text x="445" y="136" text-anchor="middle" font-size="14" font-weight="700" fill="#9a3412">Amazon ECR (privado)</text>
+  <text x="445" y="156" text-anchor="middle" font-size="11" fill="#9a3412">users · catalog · payments — tag = SHA</text>
+
+  <!-- EKS -->
+  <rect x="330" y="200" width="830" height="600" rx="14" fill="#f8fafc" stroke="#2563eb" stroke-width="1.8"/>
+  <text x="346" y="222" font-size="13" font-weight="700" fill="#1d4ed8">EKS arcadelink-eks · namespace arcadelink · 2× t3.medium · Pod Identity (sem access keys)</text>
+
+  <rect x="350" y="240" width="250" height="64" rx="10" fill="#fefce8" stroke="#ca8a04" stroke-width="1.4"/>
+  <text x="475" y="266" text-anchor="middle" font-size="13" font-weight="700" fill="#854d0e">K8s Secrets + ConfigMaps</text>
+  <text x="475" y="286" text-anchor="middle" font-size="10.5" fill="#854d0e">criados por create-secrets.sh (envFrom)</text>
+
+  <rect x="350" y="425" width="100" height="60" rx="10" fill="#eef6ff" stroke="#4a90d9" stroke-width="1.5"/>
+  <text x="400" y="452" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">NLB</text>
+  <text x="400" y="470" text-anchor="middle" font-size="10" fill="#1e3a8a">LoadBalancer</text>
+
+  <rect x="490" y="395" width="130" height="120" rx="12" fill="#e8f5e9" stroke="#13aa52" stroke-width="1.6"/>
+  <text x="555" y="440" text-anchor="middle" font-size="15" font-weight="700" fill="#0b6b34">Kong</text>
+  <text x="555" y="460" text-anchor="middle" font-size="10.5" fill="#0b6b34">valida JWT</text>
+  <text x="555" y="476" text-anchor="middle" font-size="10.5" fill="#0b6b34">injeta X-User-*</text>
+
+  <rect x="690" y="250" width="150" height="60" rx="10" fill="#ffffff" stroke="#374151" stroke-width="1.5"/>
+  <text x="765" y="276" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">users-api</text>
+  <text x="765" y="294" text-anchor="middle" font-size="10" fill="#4b5563">/auth · /users · /health</text>
+  <rect x="690" y="410" width="150" height="70" rx="10" fill="#ffffff" stroke="#374151" stroke-width="1.5"/>
+  <text x="765" y="436" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">catalog-api</text>
+  <text x="765" y="454" text-anchor="middle" font-size="10" fill="#4b5563">/games · /search · /admin</text>
+  <text x="765" y="469" text-anchor="middle" font-size="10" fill="#4b5563">X-Cache HIT/MISS</text>
+  <rect x="690" y="580" width="150" height="60" rx="10" fill="#ffffff" stroke="#374151" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <text x="765" y="606" text-anchor="middle" font-size="13" font-weight="700" fill="#111827">payments-api</text>
+  <text x="765" y="624" text-anchor="middle" font-size="10" fill="#4b5563">interno · só eventos</text>
+
+  <!-- dados -->
+  <rect x="930" y="240" width="210" height="62" rx="10" fill="#eef2ff" stroke="#4f46e5" stroke-width="1.5"/>
+  <text x="1035" y="266" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3">PostgreSQL</text>
+  <text x="1035" y="284" text-anchor="middle" font-size="10" fill="#3730a3">StatefulSet · PVC gp3 (EBS)</text>
+  <rect x="930" y="322" width="210" height="62" rx="10" fill="#ecfdf5" stroke="#13aa52" stroke-width="1.5"/>
+  <text x="1035" y="348" text-anchor="middle" font-size="13" font-weight="700" fill="#0b6b34">MongoDB (GameDetails)</text>
+  <text x="1035" y="366" text-anchor="middle" font-size="10" fill="#0b6b34">StatefulSet · PVC gp3 (EBS)</text>
+  <rect x="930" y="404" width="210" height="52" rx="10" fill="#fff0f5" stroke="#d6336c" stroke-width="1.5"/>
+  <text x="1035" y="428" text-anchor="middle" font-size="13" font-weight="700" fill="#a61e4d">Redis (cache)</text>
+  <text x="1035" y="444" text-anchor="middle" font-size="10" fill="#a61e4d">Deployment, sem volume</text>
+  <rect x="930" y="476" width="210" height="52" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="1035" y="500" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">RabbitMQ (padrão)</text>
+  <text x="1035" y="516" text-anchor="middle" font-size="10" fill="#9a3412">eventos MassTransit</text>
+
+  <!-- observabilidade -->
+  <rect x="350" y="690" width="170" height="60" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="435" y="716" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">Prometheus</text>
+  <text x="435" y="734" text-anchor="middle" font-size="10" fill="#9a3412">scrape /metrics a cada 15s</text>
+  <rect x="560" y="690" width="150" height="60" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="1.5"/>
+  <text x="635" y="716" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">Grafana</text>
+  <text x="635" y="734" text-anchor="middle" font-size="10" fill="#9a3412">dashboard provisionado</text>
+  <line x1="520" y1="720" x2="558" y2="720" stroke="#ea580c" stroke-width="1.8" marker-end="url(#arrowOrange)"/>
+  <text x="780" y="705" font-size="10.5" fill="#9a3412">Prometheus coleta users-api e catalog-api</text>
+
+  <!-- OpenSearch -->
+  <rect x="1190" y="262" width="180" height="90" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="1280" y="290" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">Amazon OpenSearch</text>
+  <text x="1280" y="308" text-anchor="middle" font-size="10" fill="#5b21b6">dentro da VPC · SigV4 (IAM)</text>
+  <text x="1280" y="324" text-anchor="middle" font-size="10" fill="#5b21b6">opcional / sob demanda</text>
+  <text x="1280" y="340" text-anchor="middle" font-size="10" fill="#5b21b6">fuzzy + relevância</text>
+
+  <!-- SNS/SQS/Lambda -->
+  <rect x="1190" y="560" width="180" height="130" rx="12" fill="#fff0f5" stroke="#d6336c" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <text x="1280" y="586" text-anchor="middle" font-size="13" font-weight="700" fill="#a61e4d">SNS → SQS (+ DLQ)</text>
+  <text x="1280" y="604" text-anchor="middle" font-size="13" font-weight="700" fill="#a61e4d">→ Lambda .NET 8</text>
+  <text x="1280" y="626" text-anchor="middle" font-size="10" fill="#a61e4d">alternativa opcional ao RabbitMQ</text>
+  <text x="1280" y="642" text-anchor="middle" font-size="10" fill="#a61e4d">Messaging:Transport=AmazonSqs</text>
+  <text x="1280" y="660" text-anchor="middle" font-size="10" fill="#a61e4d">logs no CloudWatch</text>
+
+  <!-- setas -->
+  <line x1="270" y1="125" x2="328" y2="135" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="285" y="112" font-size="10" fill="#2563eb">push (tag SHA)</text>
+  <line x1="270" y1="185" x2="348" y2="228" stroke="#2563eb" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="288" y="216" font-size="10" fill="#2563eb">rollout</text>
+  <line x1="270" y1="290" x2="348" y2="278" stroke="#ca8a04" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="272" y="268" font-size="10" fill="#854d0e">secrets → K8s Secrets</text>
+  <line x1="445" y1="174" x2="445" y2="198" stroke="#ea580c" stroke-width="1.6" marker-end="url(#arrowOrange)"/>
+  <text x="455" y="190" font-size="10" fill="#9a3412">pull da imagem</text>
+
+  <line x1="180" y1="470" x2="348" y2="456" stroke="#4a90d9" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <line x1="450" y1="455" x2="488" y2="455" stroke="#4a90d9" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <line x1="620" y1="420" x2="688" y2="290" stroke="#13aa52" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <line x1="620" y1="450" x2="688" y2="445" stroke="#13aa52" stroke-width="2" marker-end="url(#arrowGreen)"/>
+
+  <line x1="840" y1="270" x2="928" y2="268" stroke="#555555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="840" y1="440" x2="928" y2="354" stroke="#555555" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="840" y1="440" x2="928" y2="430" stroke="#d6336c" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+  <line x1="840" y1="425" x2="928" y2="285" stroke="#555555" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <line x1="840" y1="610" x2="928" y2="515" stroke="#ea580c" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+  <text x="866" y="590" font-size="10" fill="#9a3412">eventos</text>
+  <line x1="1140" y1="500" x2="1188" y2="590" stroke="#d6336c" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowRed)"/>
+  <polyline points="800,410 800,312 1188,312" fill="none" stroke="#7c3aed" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#arrowPurple)"/>
+  <text x="1030" y="560" font-size="10" fill="#555555">(users e catalog também publicam)</text>
+  <text x="1142" y="306" font-size="9" fill="#7c3aed">indexa/busca</text>
+
+  <!-- legenda -->
+  <rect x="30" y="560" width="250" height="150" rx="10" fill="#ffffff" stroke="#d1d5db" stroke-width="1.2"/>
+  <text x="45" y="582" font-size="12" font-weight="700" fill="#111827">Legenda</text>
+  <line x1="45" y1="600" x2="85" y2="600" stroke="#4a90d9" stroke-width="2" marker-end="url(#arrowBlue)"/>
+  <text x="95" y="604" font-size="11" fill="#374151">tráfego HTTP / CI-CD</text>
+  <line x1="45" y1="624" x2="85" y2="624" stroke="#13aa52" stroke-width="2" marker-end="url(#arrowGreen)"/>
+  <text x="95" y="628" font-size="11" fill="#374151">roteamento do Kong</text>
+  <line x1="45" y1="648" x2="85" y2="648" stroke="#ea580c" stroke-width="1.6" marker-end="url(#arrowOrange)"/>
+  <text x="95" y="652" font-size="11" fill="#374151">eventos / imagens / métricas</text>
+  <rect x="45" y="664" width="40" height="16" rx="4" fill="#f5f3ff" stroke="#7c3aed" stroke-dasharray="5 3"/>
+  <text x="95" y="677" font-size="11" fill="#374151">tracejado = opcional</text>
+  <text x="45" y="700" font-size="10" fill="#6b7280">Sem credenciais no código ou YAML.</text>
+</svg>

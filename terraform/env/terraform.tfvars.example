@@ -1,0 +1,9 @@
+# Copie para terraform.tfvars (gitignored).
+# ARN vem do output github_actions_role_arn da stack bootstrap.
+github_actions_role_arn = "arn:aws:iam::123456789012:role/arcadelink-github-actions"
+
+# verificar standard support antes do apply
+# cluster_version = "1.35"
+
+enable_opensearch = false
+enable_messaging  = false

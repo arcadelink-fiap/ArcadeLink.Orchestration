@@ -1,0 +1,115 @@
+name: Deploy da plataforma
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+      - 'scripts/create-secrets.sh'
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: deploy-platform
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Validar variáveis do repositório
+        shell: bash
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          EKS_CLUSTER_NAME: ${{ vars.EKS_CLUSTER_NAME }}
+        run: |
+          missing=0
+          for v in AWS_REGION AWS_ROLE_ARN EKS_CLUSTER_NAME; do
+            if [ -z "${!v}" ]; then
+              echo "::error::A variável do GitHub '$v' não está definida (Settings > Secrets and variables > Actions > Variables)."
+              missing=1
+            fi
+          done
+          exit "$missing"
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Credenciais AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Configurar kubeconfig
+        run: aws eks update-kubeconfig --name "${{ vars.EKS_CLUSTER_NAME }}" --region "${{ vars.AWS_REGION }}"
+
+      - name: Criar/atualizar Secrets e reiniciar workloads
+        env:
+          JWT_KEY: ${{ secrets.JWT_KEY }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          ADMIN_SEED_EMAIL: ${{ secrets.ADMIN_SEED_EMAIL }}
+          ADMIN_SEED_PASSWORD: ${{ secrets.ADMIN_SEED_PASSWORD }}
+        run: scripts/create-secrets.sh --restart
+
+      - name: Configurar transporte de mensageria
+        env:
+          MESSAGING_TRANSPORT_VAR: ${{ vars.MESSAGING_TRANSPORT }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+        run: |
+          set -euo pipefail
+          MESSAGING_TRANSPORT="${MESSAGING_TRANSPORT_VAR:-RabbitMq}"
+          if [[ "$MESSAGING_TRANSPORT" != "RabbitMq" && "$MESSAGING_TRANSPORT" != "AmazonSqs" ]]; then
+            echo "MESSAGING_TRANSPORT invalido: '$MESSAGING_TRANSPORT' (use RabbitMq ou AmazonSqs)" >&2
+            exit 1
+          fi
+          echo "MESSAGING_TRANSPORT=$MESSAGING_TRANSPORT" >> "$GITHUB_ENV"
+
+          previous="$(kubectl get configmap messaging-config -n arcadelink \
+            -o 'jsonpath={.data.Messaging__Transport}' --ignore-not-found)"
+          previous="${previous:-RabbitMq}"
+
+          kubectl create configmap messaging-config -n arcadelink \
+            --from-literal="Messaging__Transport=${MESSAGING_TRANSPORT}" \
+            --from-literal="Messaging__AmazonSqsRegion=${AWS_REGION}" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          if [[ "$previous" != "$MESSAGING_TRANSPORT" ]]; then
+            echo "Transporte alterado ($previous -> $MESSAGING_TRANSPORT); reiniciando APIs."
+            for dep in users-api catalog-api payments-api; do
+              if [[ -n "$(kubectl get "deployment/$dep" -n arcadelink -o name --ignore-not-found)" ]]; then
+                kubectl rollout restart "deployment/$dep" -n arcadelink
+              fi
+            done
+          fi
+
+      - name: Aplicar manifests da plataforma
+        run: |
+          set -euo pipefail
+          kubectl apply -f k8s/postgres -f k8s/mongodb -f k8s/redis \
+            -f k8s/prometheus -f k8s/grafana -f k8s/kong
+          if [[ "$MESSAGING_TRANSPORT" == "RabbitMq" ]]; then
+            kubectl apply -f k8s/rabbitmq
+          else
+            kubectl delete -f k8s/rabbitmq --ignore-not-found
+          fi
+
+      - name: Aguardar rollout
+        run: |
+          set -euo pipefail
+          resources=(statefulset/postgres statefulset/mongodb deployment/redis deployment/prometheus deployment/grafana deployment/kong)
+          if [[ "$MESSAGING_TRANSPORT" == "RabbitMq" ]]; then
+            resources+=(deployment/rabbitmq)
+          fi
+          for res in "${resources[@]}"; do
+            kubectl rollout status "$res" -n arcadelink --timeout=300s
+          done
