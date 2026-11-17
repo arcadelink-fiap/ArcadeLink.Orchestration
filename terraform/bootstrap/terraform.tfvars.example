@@ -1,4 +1,5 @@
 github_owner          = "example-org"
+# github_owner_id = "<id numérico: gh api orgs/<owner> -q .id>"
 budget_email          = "alerts@example.com"
 budget_limit_usd      = 60
 create_opensearch_slr = true

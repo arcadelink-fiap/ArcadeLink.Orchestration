@@ -106,7 +106,12 @@ data "aws_iam_policy_document" "github_trust" {
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_owner}/ArcadeLink.*:ref:refs/heads/main"]
+      # Owners novos do GitHub emitem o sub com IDs imutáveis: repo:<owner>@<owner_id>/<repo>@<repo_id>:ref:...
+      values = [
+        var.github_owner_id == null
+        ? "repo:${var.github_owner}/ArcadeLink.*:ref:refs/heads/main"
+        : "repo:${var.github_owner}@${var.github_owner_id}/ArcadeLink.*:ref:refs/heads/main"
+      ]
     }
   }
 }
