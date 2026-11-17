@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kong
+  namespace: arcadelink
 spec:
   replicas: 1
   selector:
@@ -29,10 +30,28 @@ spec:
           ports:
             - containerPort: 8000
             - containerPort: 8001
+          # A Admin API só escuta em 127.0.0.1, então a probe é por TCP no proxy.
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           volumeMounts:
             - name: kong-config
               mountPath: /kong/declarative
       volumes:
         - name: kong-config
-          configMap:
-            name: kong-declarative-config
+          secret:
+            secretName: kong-declarative-config
